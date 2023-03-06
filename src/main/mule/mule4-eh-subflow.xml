@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<sub-flow name="subFlow" doc:id="5e17e0ac-3a8f-4eec-8bc9-ea0bb7a571ce" >
+		<raise-error doc:name="ANY Type" doc:id="468e7df4-0d99-4634-86ad-b4383c713393" type="ANY" description="Error Description: This is an error as a result of the Raise error processor" />
+	</sub-flow>
+	<flow name="example-subflow-process" doc:id="6ffab391-0412-4ba4-8e0e-ef953925e8de" >
+		<http:listener doc:name="Get /example16" doc:id="05b30435-9da0-4854-b5ee-25e5b17284aa" config-ref="HTTP_Listener_config" path="/example16" >
+			<http:response statusCode="#[vars.httpStatus default 200]" />
+			<http:error-response statusCode="#[vars.httpStatus default 500]" >
+				<http:body ><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<set-payload value='#["Status: Flow Started. Correlation Id is :" ++ correlationId as String]' doc:name="Status: Flow Started  CorrelationId" doc:id="0c7f85eb-1b2f-4145-a1d2-b6277a5afb0c" />
+		<logger level="INFO" doc:name="payload" doc:id="8cd2be4d-50a3-4a1b-b71d-0d8a5f3f602a" message="#[payload]" />
+		<flow-ref doc:name="subFlow" doc:id="95d3555a-2314-4b0d-88bc-1bea7173a042" name="subFlow" />
+		<set-payload value='#["Status: Flow Completed. Correlation Id is :" ++ correlationId as String]' doc:name="Status: Flow Completed  CorrelationId" doc:id="c1014673-fe24-4ca1-85ae-0789fd9aac3f" />
+		<logger level="INFO" doc:name="payload1" doc:id="f5a46989-878a-4c94-a64c-77126ae4f4f9" message="#[payload]" />
+	</flow>
+</mule>

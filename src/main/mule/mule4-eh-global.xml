@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<flow name="on-error-propagate-or-continue-global-eh" doc:id="00eb0ce5-e7be-4104-8beb-36e44b73f998" >
+		<http:listener doc:name="Get /example11" doc:id="adefb482-f6d0-404e-9343-115639f320c4" config-ref="HTTP_Listener_config" path="/example11" >
+			<http:response statusCode="#[vars.httpStatus default 200]" />
+			<http:error-response statusCode="#[vars.httpStatus default 500]" >
+				<http:body ><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<set-payload value='#["Status: Flow Started. Correlation Id is :" ++ correlationId as String]' doc:name="Status: Flow Started  CorrelationId" doc:id="ad4b1255-daee-47cc-be53-bd1af13a0db4" />
+		<logger level="INFO" doc:name="payload" doc:id="5f98059c-aacf-478e-962e-e3a721333b69" message="#[payload]" />
+		<raise-error doc:name="ANY Type" doc:id="87817bc2-4ea5-451d-813b-75f419ceef52" type="ANY" description="Error Description: This is an error as a result of the Raise error processor" />
+		<set-payload value='#["Status: Flow Completed. Correlation Id is :" ++ correlationId as String]' doc:name="Status: Flow Completed  CorrelationId" doc:id="7aa38ec6-eaa4-4739-a1eb-53c23163c244" />
+		<logger level="INFO" doc:name="payload" doc:id="da56a559-4341-44b4-93b1-25d42b0d780e" message="#[payload]" />
+	</flow>
+	<flow name="parent-flow-global" doc:id="bdef01dd-c565-448a-ad3a-b120cd809b5d" >
+		<http:listener doc:name="Get /example12" doc:id="2fa51f7e-0cc0-426d-a2bf-5e183dd6d7c0" config-ref="HTTP_Listener_config" path="/example12" >
+			<http:response statusCode="#[vars.httpStatus default 200]" />
+			<http:error-response statusCode="#[vars.httpStatus default 500]" >
+				<http:body ><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<set-payload value='#["Status: Flow Started. Correlation Id is :" ++ correlationId as String]' doc:name="Status: Flow Started  CorrelationId" doc:id="3e63647c-3ddd-42a6-8576-73e6f0cccc8c" />
+		<logger level="INFO" doc:name="payload" doc:id="a4465220-7ab5-4b60-8ea1-7734a05cc841" message="#[payload]" />
+		<flow-ref doc:name="child-flow-global" doc:id="50b64267-6dc2-4b8a-8e31-cfba4783b774" name="child-flow-global"/>
+		<set-payload value='#["Status: Flow Completed. Correlation Id is :" ++ correlationId as String]' doc:name="Status: Flow Completed  CorrelationId" doc:id="8e0fd1d6-fda9-4e67-a04e-f8790369b57e" />
+		<logger level="INFO" doc:name="payload" doc:id="8ae8d520-d80c-47ab-935d-3e9ccca0071f" message="#[payload]" />
+	</flow>
+	<flow name="child-flow-global" doc:id="c792657f-96e0-42d8-a12e-0009fc68d1ad" >
+		<set-payload value='#["Status: Flow Started. Correlation Id is :" ++ correlationId as String]' doc:name="Status: Flow Started  CorrelationId" doc:id="29a9aa4c-5be3-400b-aa45-e3a7259ab5a0" />
+		<logger level="INFO" doc:name="payload" doc:id="2d37b1b3-89d9-4b1d-89e6-d344a60d9d26" message="#[payload]" />
+		<raise-error doc:name="ANY Type" doc:id="02d6cc61-9d21-4289-a851-993251598ea7" type="ANY" description="Error Description: This is an error as a result of the Raise error processor" />
+		<set-payload value='#["Status: Flow Completed. Correlation Id is :" ++ correlationId as String]' doc:name="Status: Flow Completed  CorrelationId" doc:id="bd69ddb6-34fc-4558-9f53-6ec462ce9eb1" />
+		<logger level="INFO" doc:name="payload" doc:id="bbd1b84e-1467-458a-b4d7-18208180aa43" message="#[payload]" />
+	</flow>
+	<flow name="specify-error-type-global" doc:id="5a3211ae-39ab-4817-bd6f-f5d7f68e0df2">
+		<http:listener doc:name="Get /example13" doc:id="8e9f27ae-0ecb-4b8b-bee3-fa2cea9912b2" config-ref="HTTP_Listener_config" path="/example13">
+			<http:response statusCode="#[vars.httpStatus default 200]" />
+			<http:error-response statusCode="#[vars.httpStatus default 500]">
+				<http:body><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<set-payload value='#["Status: Flow Started. Correlation Id is :" ++ correlationId as String]' doc:name="Status: Flow Started  CorrelationId" doc:id="33a9da1f-d0a6-4c7d-930e-366c6005477d" />
+		<logger level="INFO" doc:name="payload" doc:id="dfb98640-7108-4d25-8149-0c29477cc4b0" message="#[payload]" />
+		<raise-error doc:name="STREAM_MAXIMUM_SIZE_EXCEEDED" doc:id="1e9db49f-58d5-48b3-9182-42d6ab739bc9" description="Error Description: Raise error processor - STREAM_MAXIMUM_SIZE_EXCEEDED" type="STREAM_MAXIMUM_SIZE_EXCEEDED" />
+		<set-payload value='#["Status: Flow Completed. Correlation Id is :" ++ correlationId as String]' doc:name="Status: Flow Completed  CorrelationId" doc:id="afdd2cf1-1a5d-4984-9990-46b702e0840e" />
+		<logger level="INFO" doc:name="payload1" doc:id="48297189-a99e-49cf-a739-a4ae6b01c7c8" message="#[payload]" />
+	</flow>
+	<flow name="specify-error-type-CONNECTIVITY-global" doc:id="59d39ff0-f7bc-4492-9245-a5b06a2d6819">
+		<http:listener doc:name="Get /example14" doc:id="115e454b-092b-4d3b-92c0-a5894630850a" config-ref="HTTP_Listener_config" path="/example14">
+			<http:response statusCode="#[vars.httpStatus default 200]" />
+			<http:error-response statusCode="#[vars.httpStatus default 500]">
+				<http:body><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<set-payload value='#["Status: Flow Started. Correlation Id is :" ++ correlationId as String]' doc:name="Status: Flow Started  CorrelationId" doc:id="c78b6369-f0f3-4a81-b9e5-9c25dfe7639d" />
+		<logger level="INFO" doc:name="payload" doc:id="6094ca0f-15d1-4cf6-9d52-6b19e0af5891" message="#[payload]" />
+		<raise-error doc:name="CONNECTIVITY" doc:id="63f4589b-69f7-470e-ab65-9e80276eaa07" type="CONNECTIVITY" description="Error Description: Raise error processor - CONNECTIVITY" />
+		<set-payload value='#["Status: Flow Completed. Correlation Id is :" ++ correlationId as String]' doc:name="Status: Flow Completed  CorrelationId" doc:id="b26a4f52-d8f4-466a-992d-91047788cfae" />
+		<logger level="INFO" doc:name="payload1" doc:id="85477eaa-bcf0-4185-b778-289803c9ae54" message="#[payload]" />
+	</flow>
+	<flow name="error-mapping-example" doc:id="9ee37c9b-2313-43fa-8b80-7c633cbe4c66">
+		<http:listener doc:name="Get /example15" doc:id="ac3829d8-9295-4496-8bf2-3f58260ea6c4" config-ref="HTTP_Listener_config" path="/example15">
+			<http:response statusCode="#[vars.httpStatus default 200]" />
+			<http:error-response statusCode="#[vars.httpStatus default 500]">
+				<http:body><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<set-payload value='#["Status: Flow Started. Correlation Id is :" ++ correlationId as String]' doc:name="Status: Flow Started  CorrelationId" doc:id="ee8ed208-5dc9-4189-bc1f-10170d56c9fd" />
+		<logger level="INFO" doc:name="payload" doc:id="2f8236d4-3b42-4157-8a4b-044a16887006" message="#[payload]" />
+		<validation:is-true doc:name="Check Payload" doc:id="15d0920d-9fc2-4e3c-9a66-2cac2858814b" expression="#['Payload should be this string' contains payload]" message="#['Invalid Payload']">
+			<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="APP:PAYLOAD_INVALID" />
+		</validation:is-true>
+		<set-payload value='#["Status: Flow Completed. Correlation Id is :" ++ correlationId as String]' doc:name="Status: Flow Completed  CorrelationId" doc:id="c2c7bc7d-ba64-433b-8f99-13e77e16693c" />
+		<logger level="INFO" doc:name="payload1" doc:id="8d8c0ab6-1ae0-4971-b282-5a0b69e38850" message="#[payload]" />
+	</flow>
+</mule>

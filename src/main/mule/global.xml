@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d17846b5-ab76-46f3-8a3b-378c53ebd1af" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
+	</http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="227b05e8-ef37-423f-bc7a-6127acb10784" file="config.yaml" />
+	<configuration doc:name="Configuration" doc:id="0c61744b-5979-4c8e-8304-deda3e56b23b" defaultErrorHandler-ref="globalError_Handler_specify_error_type" />
+	<error-handler name="globalError_Handler_specify_error_type" doc:id="ac56c607-f692-405e-bab4-bd44adbf0c27">
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="0e7db510-e182-49ee-a045-29f14a8c72e2" type="STREAM_MAXIMUM_SIZE_EXCEEDED">
+			<set-payload value='#["Status: Error Occurred - Handled by Global Error Handler " ++ error.description as String]' doc:name="Error Occurred - Global Error Handler " doc:id="5a89b3c0-d8e2-4129-8a80-1dc5f4906348" />
+			<logger level="INFO" doc:name="payload" doc:id="57745cfe-9d6a-464e-9583-4d4d7285f3c9" message="#[payload]" />
+		</on-error-continue>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="d36e0a85-d1ab-4698-983f-b2b159cb722c" type="ANY">
+			<set-payload value='#["Status: Error Occurred - Handled by Global Error Handler " ++ error.description as String]' doc:name="Error Occurred - Global Error Handler" doc:id="6062b1ea-dfdf-4867-b3ed-4be3843e91b2" />
+			<logger level="INFO" doc:name="payload" doc:id="fd83a79d-b17b-4e78-9389-7058a6373a42" message="#[payload]" />
+		</on-error-propagate>
+	</error-handler>
+	<error-handler name="globalError_Handler_on_error_propagate" doc:id="05282b7b-3e99-477f-9feb-9b9dd7a89eeb">
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="b06ca33d-e764-44b7-bdce-cfb4905a4798" type="ANY">
+			<set-payload value='#["Status: Error Occurred - Handled by Global Error Handler " ++ error.description as String]' doc:name="Error Occurred - Global Error Handler" doc:id="a7bac5f2-cc4f-4634-b5a0-f8872bca6043" />
+			<logger level="INFO" doc:name="payload" doc:id="caa668e5-3482-4318-9684-1f6ba9cf32d0" message="#[payload]" />
+		</on-error-propagate>
+	</error-handler>
+	<error-handler name="globalError_Handler_on_error_continue" doc:id="9ff5f0fd-9497-4600-b7b7-b0d1ec3e1d64">
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="f3d93be7-d23e-4b89-bf28-2a934a9dee5b" type="ANY">
+			<set-payload value='#["Status: Error Occurred - Handled by Global Error Handler " ++ error.description as String]' doc:name="Error Occurred - Global Error Handler" doc:id="527cc475-a4c5-411f-b0a5-1105d85dbbd1" />
+			<logger level="INFO" doc:name="payload" doc:id="4c8d7b50-c54b-4867-9d69-2ec96d590e22" message="#[payload]" />
+		</on-error-continue>
+	</error-handler>
+</mule>
